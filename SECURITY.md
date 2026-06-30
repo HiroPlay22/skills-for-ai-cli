@@ -5,7 +5,7 @@ describes what it does, what it deliberately does not do, and how to report a pr
 
 ## Reporting a vulnerability
 
-Please email **security@skills-for-ai.com** (or hallo@skills-for-ai.com) with details and steps to
+Please email **contact@skills-for-ai.com** with details and steps to
 reproduce. Do not open a public issue for security-sensitive reports. We aim to acknowledge within a
 few days.
 

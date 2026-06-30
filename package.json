@@ -1,0 +1,40 @@
+{
+  "name": "@skills-for-ai/cli",
+  "version": "0.5.0",
+  "description": "Install your unlocked skills-for-ai Skills & Agents with one command.",
+  "type": "module",
+  "bin": {
+    "skills-for-ai": "bin/skills-for-ai.mjs"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "skills-for-ai",
+    "claude",
+    "skills",
+    "agents",
+    "ai",
+    "cli",
+    "installer"
+  ],
+  "homepage": "https://skills-for-ai.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HiroPlay22/skills-for-ai-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HiroPlay22/skills-for-ai-cli/issues"
+  },
+  "author": "M.E.A.T. (Cornelius Krämer)",
+  "license": "MIT",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

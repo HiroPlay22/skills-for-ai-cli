@@ -1,0 +1,46 @@
+name: Publish to npm
+
+# Fires when a tag like 'v0.5.1' is pushed (or manually via the Actions tab).
+# Publishes @skills-for-ai/cli via npm Trusted Publishing (OIDC) WITH provenance — no token/secret.
+# Prerequisite (one-time, on npmjs.com): add a "Trusted Publisher" for THIS repo + this workflow file
+# (repo HiroPlay22/skills-for-ai-cli, workflow publish.yml). Provenance needs a PUBLIC repo (this one).
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write   # required for OIDC Trusted Publishing + provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Update npm (Trusted Publishing needs npm >= 11.5.1)
+        run: npm install -g npm@latest
+
+      # Guard: tag version must match package.json (prevents mistagged releases).
+      - name: Version check (tag == package.json)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(node -p "require('./package.json').version")"
+          echo "Tag=$TAG  package.json=$PKG"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Tag version ($TAG) != package.json ($PKG) — run 'npm version' first."
+            exit 1
+          fi
+
+      - name: Publish (OIDC + provenance, no token)
+        run: npm publish --provenance

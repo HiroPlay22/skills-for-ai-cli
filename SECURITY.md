@@ -19,7 +19,7 @@ few days.
 ## What the CLI does NOT do
 
 - It reads no project files, no `.env`, and no API keys.
-- It sends no project content anywhere — only the token, the skill name and the detected tool list
+- It sends no project content anywhere: only the token, the skill name and the detected tool list
   leave your machine.
 - It installs no background services and runs no foreign remote scripts.
 - It writes only inside known skill paths. A double path-traversal guard (client **and** server) blocks
@@ -36,7 +36,7 @@ few days.
 
 - This repository contains only the client CLI. It holds **no** credentials, service keys, or secrets.
 - The only embedded URL is the public delivery endpoint; it is token-gated and rate-limited server-side.
-- Publishing to npm uses GitHub Actions **Trusted Publishing (OIDC)** with provenance — no long-lived
+- Publishing to npm uses GitHub Actions **Trusted Publishing (OIDC)** with provenance, no long-lived
   npm token is stored anywhere.
 
 ## Removing / auditing

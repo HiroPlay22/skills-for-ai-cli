@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// skills-for-ai CLI — install a purchased Skill/Agent with one command.
+// skills-for-ai CLI: install a purchased Skill/Agent with one command.
 //
 //   npx @skills-for-ai/cli add <skill> --token <token> [--tool <t>]... [--global|--project] [--lang <l>]
 //
 // Fetches the files via the deliver edge function (JSON, no ZIP) and drops them tool-natively
-// ("native drops"). Tool detection happens locally — like skills.sh: we check which tool config
+// ("native drops"). Tool detection happens locally: like skills.sh: we check which tool config
 // folders exist; the server only delivers files. See docs/npx-cli-delivery-plan.md.
 //
 // Language: default English. --lang de|fr|es switches the output language. Our website bakes the
@@ -33,7 +33,7 @@ const STR = {
   en: {
     where_global: "global", where_project: "project",
     detected: (l) => `Detected tools: ${l}`,
-    noToolDetected: "No tool detected — using Claude Code. (Pick one explicitly with --tool.)",
+    noToolDetected: "No tool detected, using Claude Code. (Pick one explicitly with --tool.)",
     fetching: (s) => `Fetching '${s}' ...`,
     connFailed: (m) => `Could not reach the delivery endpoint: ${m}`,
     e_invalid_token: "Token invalid, revoked, or not for this skill.",
@@ -43,14 +43,14 @@ const STR = {
     e_file_not_available: "No file is (yet) available for this skill.",
     e_server: (st, e) => `Server error (${st}): ${e}`,
     e_unknown_action: (a) => `Unknown action '${a}'. Supported: add, remove, doctor.`,
-    e_no_skill: "No skill given. Example: add website-doktor --token ...",
+    e_no_skill: "No skill given. Example: add website-doctor --token ...",
     e_no_token: "No --token given. You'll find your token under 'My Skills'.",
     e_both_scope: "Specify only one of --global / --project.",
     e_unknown_tools: (bad, all) => `Unknown tool(s): ${bad}. Allowed: ${all}`,
     e_no_files: "Server returned no files.",
     e_unsafe_path: (r) => `unsafe path: ${r}`,
-    noGlobalPath: (label) => `${label}: no global path known — installing into the project.`,
-    unknownFromServer: (k) => `Unknown tool from server: ${k} — skipped.`,
+    noGlobalPath: (label) => `${label}: no global path known, installing into the project.`,
+    unknownFromServer: (k) => `Unknown tool from server: ${k}, skipped.`,
     unsupported: (l) => `No content for: ${l} (skill doesn't offer this platform).`,
     written: (labels, where, n, base) => `${labels} (${where}): ${n} file(s) -> ${dim(base)}`,
     installedOk: (name, ver, n) => `'${name}' v${ver} installed (${n} file(s)).`,
@@ -58,17 +58,17 @@ const STR = {
     geminiHint: (cmd) => `Enable Gemini: ${cmd}`,
     removing: (s) => `Removing '${s}' ...`,
     removed: (label, dir) => `${label}: removed -> ${dim(dir)}`,
-    removedBlock: "AGENTS.md: removed our marked block — your other content was kept.",
-    nothingFound: (s) => `Nothing found for '${s}' — nothing removed. (Try --global or --project, or name the --tool.)`,
+    removedBlock: "AGENTS.md: removed our marked block, your other content was kept.",
+    nothingFound: (s) => `Nothing found for '${s}', nothing removed. (Try --global or --project, or name the --tool.)`,
     removedOk: (s, n) => `'${s}' removed (${n} location(s)).`,
-    e_rate_limited: "Too many requests right now — please wait a moment and try again.",
+    e_rate_limited: "Too many requests right now, please wait a moment and try again.",
     overwriteWarn: (n) => `${n} existing file(s) would be overwritten:`,
     overwriteAsk: "Overwrite them? [y/N] ",
-    overwriteAbort: "Aborted — nothing was changed.",
-    overwriteForceHint: "Non-interactive run — the existing files are being overwritten (update).",
-    hashMismatch: (f) => `integrity check failed for ${f} — checksum did not match.`,
+    overwriteAbort: "Aborted, nothing was changed.",
+    overwriteForceHint: "Non-interactive run, the existing files are being overwritten (update).",
+    hashMismatch: (f) => `integrity check failed for ${f}, checksum did not match.`,
     integrityOk: (n) => `Integrity verified (${n} file(s), SHA-256).`,
-    help: (tools, ep) => `${bold("skills-for-ai")} — install purchased Skills & Agents with one command
+    help: (tools, ep) => `${bold("skills-for-ai")}: install purchased Skills & Agents with one command
 
 ${bold("Usage:")}
   npx @skills-for-ai/cli add <skill> --token <token> [options]
@@ -89,12 +89,12 @@ ${bold("Options:")}
   --help              This help.
 
 ${bold("Example:")}
-  npx @skills-for-ai/cli add website-doktor --token sfa_live_...`,
+  npx @skills-for-ai/cli add website-doctor --token sfa_live_...`,
   },
   de: {
     where_global: "global", where_project: "Projekt",
     detected: (l) => `Erkannte Tools: ${l}`,
-    noToolDetected: "Kein Tool erkannt — verwende Claude Code. (Mit --tool gezielt waehlen.)",
+    noToolDetected: "Kein Tool erkannt, verwende Claude Code. (Mit --tool gezielt waehlen.)",
     fetching: (s) => `Hole '${s}' ...`,
     connFailed: (m) => `Verbindung zum Liefer-Endpoint fehlgeschlagen: ${m}`,
     e_invalid_token: "Token ungueltig, widerrufen oder gehoert nicht zu diesem Skill.",
@@ -104,14 +104,14 @@ ${bold("Example:")}
     e_file_not_available: "Fuer diesen Skill ist (noch) keine Datei hinterlegt.",
     e_server: (st, e) => `Server-Fehler (${st}): ${e}`,
     e_unknown_action: (a) => `Unbekannte Aktion '${a}'. Unterstuetzt: add, remove, doctor.`,
-    e_no_skill: "Kein Skill angegeben. Beispiel: add website-doktor --token ...",
+    e_no_skill: "Kein Skill angegeben. Beispiel: add website-doctor --token ...",
     e_no_token: "Kein --token angegeben. Den Token findest du unter 'Meine Skills'.",
     e_both_scope: "Nur eines von --global / --project angeben.",
     e_unknown_tools: (bad, all) => `Unbekannte(s) Tool(s): ${bad}. Erlaubt: ${all}`,
     e_no_files: "Server hat keine Dateien geliefert.",
     e_unsafe_path: (r) => `unsicherer Pfad: ${r}`,
-    noGlobalPath: (label) => `${label}: kein globaler Pfad bekannt — installiere ins Projekt.`,
-    unknownFromServer: (k) => `Unbekanntes Tool vom Server: ${k} — uebersprungen.`,
+    noGlobalPath: (label) => `${label}: kein globaler Pfad bekannt, installiere ins Projekt.`,
+    unknownFromServer: (k) => `Unbekanntes Tool vom Server: ${k}, uebersprungen.`,
     unsupported: (l) => `Keine Inhalte fuer: ${l} (Skill bietet diese Plattform nicht).`,
     written: (labels, where, n, base) => `${labels} (${where}): ${n} Datei(en) -> ${dim(base)}`,
     installedOk: (name, ver, n) => `'${name}' v${ver} installiert (${n} Datei(en)).`,
@@ -119,17 +119,17 @@ ${bold("Example:")}
     geminiHint: (cmd) => `Gemini aktivieren: ${cmd}`,
     removing: (s) => `Entferne '${s}' ...`,
     removed: (label, dir) => `${label}: entfernt -> ${dim(dir)}`,
-    removedBlock: "AGENTS.md: unseren markierten Block entfernt — dein uebriger Inhalt bleibt.",
-    nothingFound: (s) => `Nichts gefunden fuer '${s}' — nichts entfernt. (Versuche --global oder --project, oder nenne das --tool.)`,
+    removedBlock: "AGENTS.md: unseren markierten Block entfernt, dein uebriger Inhalt bleibt.",
+    nothingFound: (s) => `Nichts gefunden fuer '${s}', nichts entfernt. (Versuche --global oder --project, oder nenne das --tool.)`,
     removedOk: (s, n) => `'${s}' entfernt (${n} Ort(e)).`,
-    e_rate_limited: "Zu viele Anfragen gerade — bitte kurz warten und erneut versuchen.",
+    e_rate_limited: "Zu viele Anfragen gerade, bitte kurz warten und erneut versuchen.",
     overwriteWarn: (n) => `${n} vorhandene Datei(en) wuerden ueberschrieben:`,
     overwriteAsk: "Ueberschreiben? [j/N] ",
-    overwriteAbort: "Abgebrochen — nichts veraendert.",
-    overwriteForceHint: "Nicht-interaktiver Lauf — die vorhandenen Dateien werden ueberschrieben (Update).",
-    hashMismatch: (f) => `Integritaetspruefung fehlgeschlagen fuer ${f} — Pruefsumme stimmt nicht.`,
+    overwriteAbort: "Abgebrochen, nichts veraendert.",
+    overwriteForceHint: "Nicht-interaktiver Lauf, die vorhandenen Dateien werden ueberschrieben (Update).",
+    hashMismatch: (f) => `Integritaetspruefung fehlgeschlagen fuer ${f}, Pruefsumme stimmt nicht.`,
     integrityOk: (n) => `Integritaet geprueft (${n} Datei(en), SHA-256).`,
-    help: (tools, ep) => `${bold("skills-for-ai")} — gekaufte Skills & Agents mit einem Befehl installieren
+    help: (tools, ep) => `${bold("skills-for-ai")}: gekaufte Skills & Agents mit einem Befehl installieren
 
 ${bold("Nutzung:")}
   npx @skills-for-ai/cli add <skill> --token <token> [Optionen]
@@ -150,12 +150,12 @@ ${bold("Optionen:")}
   --help              Diese Hilfe.
 
 ${bold("Beispiel:")}
-  npx @skills-for-ai/cli add website-doktor --token sfa_live_...`,
+  npx @skills-for-ai/cli add website-doctor --token sfa_live_...`,
   },
   fr: {
     where_global: "global", where_project: "projet",
     detected: (l) => `Outils détectés : ${l}`,
-    noToolDetected: "Aucun outil détecté — utilisation de Claude Code. (Précisez avec --tool.)",
+    noToolDetected: "Aucun outil détecté, utilisation de Claude Code. (Précisez avec --tool.)",
     fetching: (s) => `Récupération de « ${s} » ...`,
     connFailed: (m) => `Impossible de joindre le point de livraison : ${m}`,
     e_invalid_token: "Jeton invalide, révoqué ou ne correspondant pas à ce skill.",
@@ -165,14 +165,14 @@ ${bold("Beispiel:")}
     e_file_not_available: "Aucun fichier n'est (encore) disponible pour ce skill.",
     e_server: (st, e) => `Erreur serveur (${st}) : ${e}`,
     e_unknown_action: (a) => `Action « ${a} » inconnue. Pris en charge : add, remove, doctor.`,
-    e_no_skill: "Aucun skill indiqué. Exemple : add website-doktor --token ...",
+    e_no_skill: "Aucun skill indiqué. Exemple : add website-doctor --token ...",
     e_no_token: "Aucun --token indiqué. Vous trouverez votre jeton dans « Mes skills ».",
     e_both_scope: "Indiquez un seul de --global / --project.",
     e_unknown_tools: (bad, all) => `Outil(s) inconnu(s) : ${bad}. Autorisés : ${all}`,
     e_no_files: "Le serveur n'a renvoyé aucun fichier.",
     e_unsafe_path: (r) => `chemin non sûr : ${r}`,
-    noGlobalPath: (label) => `${label} : aucun chemin global connu — installation dans le projet.`,
-    unknownFromServer: (k) => `Outil inconnu du serveur : ${k} — ignoré.`,
+    noGlobalPath: (label) => `${label} : aucun chemin global connu, installation dans le projet.`,
+    unknownFromServer: (k) => `Outil inconnu du serveur : ${k}, ignoré.`,
     unsupported: (l) => `Aucun contenu pour : ${l} (le skill n'offre pas cette plateforme).`,
     written: (labels, where, n, base) => `${labels} (${where}) : ${n} fichier(s) -> ${dim(base)}`,
     installedOk: (name, ver, n) => `« ${name} » v${ver} installé (${n} fichier(s)).`,
@@ -180,17 +180,17 @@ ${bold("Beispiel:")}
     geminiHint: (cmd) => `Activer Gemini : ${cmd}`,
     removing: (s) => `Suppression de « ${s} » ...`,
     removed: (label, dir) => `${label} : supprimé -> ${dim(dir)}`,
-    removedBlock: "AGENTS.md : notre bloc balisé a été supprimé — ton autre contenu est conservé.",
-    nothingFound: (s) => `Rien trouvé pour « ${s} » — rien supprimé. (Essaie --global ou --project, ou indique le --tool.)`,
+    removedBlock: "AGENTS.md : notre bloc balisé a été supprimé, ton autre contenu est conservé.",
+    nothingFound: (s) => `Rien trouvé pour « ${s} », rien supprimé. (Essaie --global ou --project, ou indique le --tool.)`,
     removedOk: (s, n) => `« ${s} » supprimé (${n} emplacement(s)).`,
-    e_rate_limited: "Trop de requêtes pour le moment — patiente un instant puis réessaie.",
+    e_rate_limited: "Trop de requêtes pour le moment, patiente un instant puis réessaie.",
     overwriteWarn: (n) => `${n} fichier(s) existant(s) seraient écrasés :`,
     overwriteAsk: "Les écraser ? [o/N] ",
-    overwriteAbort: "Annulé — rien n'a été modifié.",
-    overwriteForceHint: "Exécution non interactive — les fichiers existants sont écrasés (mise à jour).",
-    hashMismatch: (f) => `échec du contrôle d'intégrité pour ${f} — la somme de contrôle ne correspond pas.`,
+    overwriteAbort: "Annulé, rien n'a été modifié.",
+    overwriteForceHint: "Exécution non interactive, les fichiers existants sont écrasés (mise à jour).",
+    hashMismatch: (f) => `échec du contrôle d'intégrité pour ${f}, la somme de contrôle ne correspond pas.`,
     integrityOk: (n) => `Intégrité vérifiée (${n} fichier(s), SHA-256).`,
-    help: (tools, ep) => `${bold("skills-for-ai")} — installez vos Skills & Agents achetés en une commande
+    help: (tools, ep) => `${bold("skills-for-ai")}: installez vos Skills & Agents achetés en une commande
 
 ${bold("Utilisation :")}
   npx @skills-for-ai/cli add <skill> --token <token> [options]
@@ -211,12 +211,12 @@ ${bold("Options :")}
   --help              Cette aide.
 
 ${bold("Exemple :")}
-  npx @skills-for-ai/cli add website-doktor --token sfa_live_...`,
+  npx @skills-for-ai/cli add website-doctor --token sfa_live_...`,
   },
   es: {
     where_global: "global", where_project: "proyecto",
     detected: (l) => `Herramientas detectadas: ${l}`,
-    noToolDetected: "No se detectó ninguna herramienta — usando Claude Code. (Elige con --tool.)",
+    noToolDetected: "No se detectó ninguna herramienta, usando Claude Code. (Elige con --tool.)",
     fetching: (s) => `Obteniendo «${s}» ...`,
     connFailed: (m) => `No se pudo contactar el endpoint de entrega: ${m}`,
     e_invalid_token: "Token no válido, revocado o no corresponde a este skill.",
@@ -226,14 +226,14 @@ ${bold("Exemple :")}
     e_file_not_available: "Aún no hay ningún archivo disponible para este skill.",
     e_server: (st, e) => `Error del servidor (${st}): ${e}`,
     e_unknown_action: (a) => `Acción «${a}» desconocida. Compatibles: add, remove, doctor.`,
-    e_no_skill: "No se indicó ningún skill. Ejemplo: add website-doktor --token ...",
+    e_no_skill: "No se indicó ningún skill. Ejemplo: add website-doctor --token ...",
     e_no_token: "No se indicó --token. Encontrarás tu token en «Mis skills».",
     e_both_scope: "Indica solo uno de --global / --project.",
     e_unknown_tools: (bad, all) => `Herramienta(s) desconocida(s): ${bad}. Permitidas: ${all}`,
     e_no_files: "El servidor no devolvió ningún archivo.",
     e_unsafe_path: (r) => `ruta no segura: ${r}`,
-    noGlobalPath: (label) => `${label}: no se conoce ruta global — instalando en el proyecto.`,
-    unknownFromServer: (k) => `Herramienta desconocida del servidor: ${k} — omitida.`,
+    noGlobalPath: (label) => `${label}: no se conoce ruta global, instalando en el proyecto.`,
+    unknownFromServer: (k) => `Herramienta desconocida del servidor: ${k}, omitida.`,
     unsupported: (l) => `Sin contenido para: ${l} (el skill no ofrece esta plataforma).`,
     written: (labels, where, n, base) => `${labels} (${where}): ${n} archivo(s) -> ${dim(base)}`,
     installedOk: (name, ver, n) => `«${name}» v${ver} instalado (${n} archivo(s)).`,
@@ -241,17 +241,17 @@ ${bold("Exemple :")}
     geminiHint: (cmd) => `Activar Gemini: ${cmd}`,
     removing: (s) => `Eliminando «${s}» ...`,
     removed: (label, dir) => `${label}: eliminado -> ${dim(dir)}`,
-    removedBlock: "AGENTS.md: se eliminó nuestro bloque marcado — tu otro contenido se mantiene.",
-    nothingFound: (s) => `No se encontró nada para «${s}» — no se eliminó nada. (Prueba --global o --project, o indica el --tool.)`,
+    removedBlock: "AGENTS.md: se eliminó nuestro bloque marcado, tu otro contenido se mantiene.",
+    nothingFound: (s) => `No se encontró nada para «${s}», no se eliminó nada. (Prueba --global o --project, o indica el --tool.)`,
     removedOk: (s, n) => `«${s}» eliminado (${n} ubicación(es)).`,
-    e_rate_limited: "Demasiadas solicitudes ahora mismo — espera un momento y vuelve a intentarlo.",
+    e_rate_limited: "Demasiadas solicitudes ahora mismo, espera un momento y vuelve a intentarlo.",
     overwriteWarn: (n) => `${n} archivo(s) existente(s) se sobrescribirían:`,
     overwriteAsk: "¿Sobrescribir? [s/N] ",
-    overwriteAbort: "Cancelado — no se cambió nada.",
-    overwriteForceHint: "Ejecución no interactiva — los archivos existentes se sobrescriben (actualización).",
-    hashMismatch: (f) => `falló la verificación de integridad de ${f} — la suma de comprobación no coincide.`,
+    overwriteAbort: "Cancelado, no se cambió nada.",
+    overwriteForceHint: "Ejecución no interactiva, los archivos existentes se sobrescriben (actualización).",
+    hashMismatch: (f) => `falló la verificación de integridad de ${f}, la suma de comprobación no coincide.`,
     integrityOk: (n) => `Integridad verificada (${n} archivo(s), SHA-256).`,
-    help: (tools, ep) => `${bold("skills-for-ai")} — instala los Skills & Agents comprados con un comando
+    help: (tools, ep) => `${bold("skills-for-ai")}: instala los Skills & Agents comprados con un comando
 
 ${bold("Uso:")}
   npx @skills-for-ai/cli add <skill> --token <token> [opciones]
@@ -272,34 +272,39 @@ ${bold("Opciones:")}
   --help              Esta ayuda.
 
 ${bold("Ejemplo:")}
-  npx @skills-for-ai/cli add website-doktor --token sfa_live_...`,
+  npx @skills-for-ai/cli add website-doctor --token sfa_live_...`,
   },
 };
 const pickLang = (v) => { const x = (v || "").toLowerCase().slice(0, 2); return STR[x] ? x : "en"; };
-// Active string table — set in main() once --lang is parsed; English until then.
+// Active string table: set in main() once --lang is parsed; English until then.
 let T = STR.en;
 
 const ok = (s) => console.log(`${green("OK")} ${s}`);
 const info = (s) => console.log(`${cyan(">")} ${s}`);
 const warn = (s) => console.log(`${yellow("!")} ${s}`);
-// No process.exit() — that triggers the libuv assertion (UV_HANDLE_CLOSING) on Windows while the
+// No process.exit(): that triggers the libuv assertion (UV_HANDLE_CLOSING) on Windows while the
 // fetch handle is still closing. Instead set exitCode + abort cleanly via a marked error.
 const die = (s) => { console.error(`${red("x")} ${s}`); process.exitCode = 1; throw Object.assign(new Error(s), { handled: true }); };
 
 // Per-tool config. detect = home-relative markers (existence => tool present).
-// globalBase = base for global install; globalRewrite = path-prefix swap only when global.
-// Global paths verified against official docs (2026-06): claude ~/.claude, agents standard
-// ~/.agents/skills (cursor/copilot/codex), cline ~/.cline, windsurf ~/.codeium/windsurf, gemini ~/.gemini/extensions.
+// globalBase = base for global install; globalRewrite = list of [from, to] path-prefix swaps, only when
+// global (first match wins).
+// Global paths verified against official docs (2026-09): claude ~/.claude, agents standard
+// ~/.agents/skills (cursor/copilot/codex/gemini), cline ~/.cline, Devin Desktop (formerly Windsurf)
+// ~/.codeium/windsurf. Gemini CLI reads Agent Skills natively (https://geminicli.com/docs/cli/skills/);
+// only agent wrappers for Gemini are still extensions (see isGeminiExt below).
+// Copilot custom agents (*.agent.md): repo .github/agents/, personal ~/.copilot/agents/ (docs.github.com,
+// "Creating and using custom agents for GitHub Copilot CLI"), so the global install swaps that prefix.
 const TOOLS = {
   "claude-code":    { label: "Claude Code",    detect: [".claude"],               scope: "global", globalBase: HOME },
-  "gemini":         { label: "Gemini CLI",     detect: [".gemini"],               scope: "project" },  // Extension -> write into project, then `gemini extensions install` (no auto-discovery)
+  "gemini":         { label: "Gemini CLI",     detect: [".gemini"],               scope: "global", globalBase: HOME },
   "cursor":         { label: "Cursor",         detect: [".cursor"],               scope: "global", globalBase: HOME },
-  "github-copilot": { label: "GitHub Copilot", detect: [".copilot"],              scope: "global", globalBase: HOME },
+  "github-copilot": { label: "GitHub Copilot", detect: [".copilot"],              scope: "global", globalBase: HOME, globalRewrite: [[".github/agents/", ".copilot/agents/"]] },
   "codex":          { label: "Codex CLI",      detect: [".codex"],                scope: "global", globalBase: HOME },
-  "windsurf":       { label: "Windsurf",       detect: [".windsurf", ".codeium"], scope: "global", globalBase: HOME, globalRewrite: [".windsurf/", ".codeium/windsurf/"] },
+  "windsurf":       { label: "Devin Desktop (Windsurf)", detect: [".windsurf", ".codeium"], scope: "global", globalBase: HOME, globalRewrite: [[".windsurf/workflows/", ".codeium/windsurf/global_workflows/"], [".windsurf/", ".codeium/windsurf/"]] },
   "cline":          { label: "Cline",          detect: [".cline"],                scope: "global", globalBase: HOME },
 };
-const ALIAS = { claude: "claude-code", "claude-code": "claude-code", copilot: "github-copilot" };
+const ALIAS = { claude: "claude-code", "claude-code": "claude-code", copilot: "github-copilot", "devin-desktop": "windsurf" };
 const norm = (t) => ALIAS[t] || t;
 const toolList = () => Object.keys(TOOLS).join(", ");
 
@@ -326,7 +331,7 @@ function writeSafe(base, rel, content) {
   return dest;
 }
 
-// Geteilte Guidance-Dateien (z. B. AGENTS.md von Codex) NIE überschreiben — der Käufer hat dort
+// Geteilte Guidance-Dateien (z. B. AGENTS.md von Codex) NIE überschreiben: der Käufer hat dort
 // evtl. eigene Team-Regeln. Stattdessen einen idempotenten, markierten Block ein-/aktualisieren.
 const MERGE_FILES = new Set(["AGENTS.md"]);
 function baseName(rel) { return rel.split("/").pop(); }
@@ -354,9 +359,15 @@ function installFile(base, rel, content, skill) {
   return { dest, merged };
 }
 
+// Gemini extension folders in a delivered file set (top-level dir that holds gemini-extension.json).
+function geminiExtDirs(fset) {
+  return Object.keys(fset || {}).map((rel) => rel.split("/")).filter((p) => p.length === 2 && p[1] === "gemini-extension.json").map((p) => p[0]);
+}
+const isGeminiExt = (fset) => geminiExtDirs(fset).length > 0;
+
 // Read-only Diagnose: wo liegen installierte Skills, ist eine AGENTS.md vorhanden, was greift?
 const DOC_SUB = {
-  "claude-code": ".claude/skills", "gemini": ".gemini/extensions", "cursor": ".agents/skills",
+  "claude-code": ".claude/skills", "gemini": ".agents/skills", "cursor": ".agents/skills",
   "github-copilot": ".agents/skills", "codex": ".agents/skills", "windsurf": ".codeium/windsurf/skills", "cline": ".cline/skills",
 };
 function runDoctor(o, L) {
@@ -372,9 +383,9 @@ function runDoctor(o, L) {
       if (!wbase) continue;
       const dir = resolve(wbase, ...(DOC_SUB[tk] || ".agents/skills").split("/"));
       let label;
-      try { label = existsSync(dir) ? readdirSync(dir).filter((n) => !n.startsWith(".")).length + " installed" : "—"; }
+      try { label = existsSync(dir) ? readdirSync(dir).filter((n) => !n.startsWith(".")).length + " installed" : "none"; }
       catch (e) { label = "?"; }
-      console.log(dim(`  ${where}: ${dir} — ${label}`));
+      console.log(dim(`  ${where}: ${dir} (${label})`));
     }
   }
   const ag = resolve(CWD, "AGENTS.md");
@@ -382,16 +393,16 @@ function runDoctor(o, L) {
     let blocks = 0;
     try { blocks = (readFileSync(ag, "utf8").match(/skills-for-ai:[^:]+:start/g) || []).length; } catch (e) {}
     console.log("\n" + (({
-      en: `AGENTS.md present in project (${blocks} skills-for-ai block(s)). Codex agents merge into a marked block — your content is kept.`,
-      de: `AGENTS.md im Projekt vorhanden (${blocks} skills-for-ai-Block/Blöcke). Codex-Agenten ergänzen einen markierten Block — dein Inhalt bleibt.`,
-      fr: `AGENTS.md présent dans le projet (${blocks} bloc(s) skills-for-ai). Les agents Codex fusionnent dans un bloc balisé — ton contenu est conservé.`,
-      es: `AGENTS.md presente en el proyecto (${blocks} bloque(s) skills-for-ai). Los agentes Codex fusionan en un bloque marcado — tu contenido se mantiene.`,
+      en: `AGENTS.md present in project (${blocks} skills-for-ai block(s)). Codex agents merge into a marked block, your content is kept.`,
+      de: `AGENTS.md im Projekt vorhanden (${blocks} skills-for-ai-Block/Blöcke). Codex-Agenten ergänzen einen markierten Block, dein Inhalt bleibt.`,
+      fr: `AGENTS.md présent dans le projet (${blocks} bloc(s) skills-for-ai). Les agents Codex fusionnent dans un bloc balisé, ton contenu est conservé.`,
+      es: `AGENTS.md presente en el proyecto (${blocks} bloque(s) skills-for-ai). Los agentes Codex fusionan en un bloque marcado, tu contenido se mantiene.`,
     })[L] || ""));
   }
 }
 
 // Lokale Deinstallation: löscht den Skill-Ordner je Tool/Scope + entfernt unseren AGENTS.md-Block.
-// Kein Token/Server nötig — rein lokal, schreibt/löscht NUR in bekannten Skill-Pfaden (Safety-Check).
+// Kein Token/Server nötig: rein lokal, schreibt/löscht NUR in bekannten Skill-Pfaden (Safety-Check).
 function runRemove(o, L, skill) {
   const requested = [...(o.tool || []), ...(o.agent || [])].flatMap((s) => s.split(",")).map((s) => s.trim()).filter(Boolean);
   let tools;
@@ -562,10 +573,23 @@ async function main() {
     // Codex-Agent (Persona als AGENTS.md) gehört projekt-lokal, nicht global (würde sonst ~/AGENTS.md treffen).
     const isAgentWrapper = Object.keys(fset).some((rel) => baseName(rel) === "AGENTS.md");
     if (toolKey === "codex" && isAgentWrapper && !o.global) { base = CWD; where = T.where_project; }
+    // Cursor and Cline read agent rules/workflows only inside a project (Cursor user rules are not files;
+    // Cline: .clinerules/ and .clinerules/workflows/), so their agent wrappers always go project-local.
+    const isProjectWrapper = Object.keys(fset).some((rel) => rel.startsWith(".cursor/rules/") || rel.startsWith(".clinerules/"));
+    if ((toolKey === "cursor" || toolKey === "cline") && isProjectWrapper) {
+      if (o.global) warn(T.noGlobalPath(t.label));
+      base = CWD; where = T.where_project;
+    }
+    // Gemini agent wrapper = extension folder (<slug>/gemini-extension.json): lands in the project and
+    // gets registered via `gemini extensions install` (hint at the end). Plain skills go to .agents/skills.
+    if (toolKey === "gemini" && isGeminiExt(fset)) {
+      if (o.global) warn(T.noGlobalPath(t.label));
+      base = CWD; where = T.where_project;
+    }
     // Global only: tool-specific path-prefix swap (e.g. Windsurf .windsurf/ -> .codeium/windsurf/).
-    const rw = (where === T.where_global) ? t.globalRewrite : null;
+    const rw = (where === T.where_global) ? (t.globalRewrite || []) : [];
     const entries = Object.keys(fset).map((rel) => ({
-      target: rw && rel.startsWith(rw[0]) ? rw[1] + rel.slice(rw[0].length) : rel,
+      target: (() => { const r = rw.find(([from]) => rel.startsWith(from)); return r ? r[1] + rel.slice(r[0].length) : rel; })(),
       content: fset[rel],
       hash: (data.hashes && data.hashes[toolKey] && data.hashes[toolKey][rel]) || null,
     }));
@@ -603,11 +627,11 @@ async function main() {
     }
     ok(T.written(bold(g.labels.join(", ")), g.where, g.entries.length, g.base));
     if (mergedAny) info(({
-      en: "AGENTS.md: updated only our marked block — your existing content was kept.",
-      de: "AGENTS.md: nur unseren markierten Block aktualisiert — dein Inhalt bleibt erhalten.",
-      fr: "AGENTS.md : seul notre bloc balisé a été mis à jour — ton contenu est conservé.",
-      es: "AGENTS.md: solo se actualizó nuestro bloque marcado — tu contenido se mantiene.",
-    })[L] || "AGENTS.md: updated only our marked block — your existing content was kept.");
+      en: "AGENTS.md: updated only our marked block, your existing content was kept.",
+      de: "AGENTS.md: nur unseren markierten Block aktualisiert, dein Inhalt bleibt erhalten.",
+      fr: "AGENTS.md : seul notre bloc balisé a été mis à jour, ton contenu est conservé.",
+      es: "AGENTS.md: solo se actualizó nuestro bloque marcado, tu contenido se mantiene.",
+    })[L] || "AGENTS.md: updated only our marked block, your existing content was kept.");
   }
   if (verified) info(T.integrityOk(verified));
   if (Array.isArray(data.unsupported) && data.unsupported.length) {
@@ -622,9 +646,10 @@ async function main() {
   if (deliveredTools.includes("claude-code")) {
     console.log(dim("  " + T.claudeHint));
   }
-  if (deliveredTools.includes("gemini")) {
-    // Gemini does NOT auto-discover extensions from the folder — registering is mandatory.
-    console.log(`${cyan(">")} ${T.geminiHint(bold("gemini extensions install ./" + skill))}`);
+  // Only for extension folders (Gemini agent wrappers): Gemini does not auto-discover them, registering
+  // is mandatory. Plain skills in .agents/skills are picked up natively, no hint needed.
+  for (const dir of geminiExtDirs(fileSet.gemini)) {
+    console.log(`${cyan(">")} ${T.geminiHint(bold("gemini extensions install ./" + dir))}`);
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@skills-for-ai/cli",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Install your unlocked skills-for-ai Skills & Agents with one command.",
   "type": "module",
   "bin": {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// skills-for-ai CLI: install a purchased Skill/Agent with one command.
+// skills-for-ai CLI: install an unlocked Skill/Agent with one command.
 //
 //   npx @skills-for-ai/cli add <skill> --token <token> [--tool <t>]... [--global|--project] [--lang <l>]
 //
@@ -59,6 +59,7 @@ const STR = {
     removing: (s) => `Removing '${s}' ...`,
     removed: (label, dir) => `${label}: removed -> ${dim(dir)}`,
     removedBlock: "AGENTS.md: removed our marked block, your other content was kept.",
+    geminiUninstall: (s) => `Gemini keeps its own copy of installed extensions. Also run: gemini extensions uninstall ${s}`,
     nothingFound: (s) => `Nothing found for '${s}', nothing removed. (Try --global or --project, or name the --tool.)`,
     removedOk: (s, n) => `'${s}' removed (${n} location(s)).`,
     e_rate_limited: "Too many requests right now, please wait a moment and try again.",
@@ -68,7 +69,7 @@ const STR = {
     overwriteForceHint: "Non-interactive run, the existing files are being overwritten (update).",
     hashMismatch: (f) => `integrity check failed for ${f}, checksum did not match.`,
     integrityOk: (n) => `Integrity verified (${n} file(s), SHA-256).`,
-    help: (tools, ep) => `${bold("skills-for-ai")}: install purchased Skills & Agents with one command
+    help: (tools, ep) => `${bold("skills-for-ai")}: install your unlocked Skills & Agents with one command
 
 ${bold("Usage:")}
   npx @skills-for-ai/cli add <skill> --token <token> [options]
@@ -120,6 +121,7 @@ ${bold("Example:")}
     removing: (s) => `Entferne '${s}' ...`,
     removed: (label, dir) => `${label}: entfernt -> ${dim(dir)}`,
     removedBlock: "AGENTS.md: unseren markierten Block entfernt, dein uebriger Inhalt bleibt.",
+    geminiUninstall: (s) => `Gemini behaelt eine eigene Kopie installierter Extensions. Zusaetzlich ausfuehren: gemini extensions uninstall ${s}`,
     nothingFound: (s) => `Nichts gefunden fuer '${s}', nichts entfernt. (Versuche --global oder --project, oder nenne das --tool.)`,
     removedOk: (s, n) => `'${s}' entfernt (${n} Ort(e)).`,
     e_rate_limited: "Zu viele Anfragen gerade, bitte kurz warten und erneut versuchen.",
@@ -129,7 +131,7 @@ ${bold("Example:")}
     overwriteForceHint: "Nicht-interaktiver Lauf, die vorhandenen Dateien werden ueberschrieben (Update).",
     hashMismatch: (f) => `Integritaetspruefung fehlgeschlagen fuer ${f}, Pruefsumme stimmt nicht.`,
     integrityOk: (n) => `Integritaet geprueft (${n} Datei(en), SHA-256).`,
-    help: (tools, ep) => `${bold("skills-for-ai")}: gekaufte Skills & Agents mit einem Befehl installieren
+    help: (tools, ep) => `${bold("skills-for-ai")}: freigeschaltete Skills & Agents mit einem Befehl installieren
 
 ${bold("Nutzung:")}
   npx @skills-for-ai/cli add <skill> --token <token> [Optionen]
@@ -181,6 +183,7 @@ ${bold("Beispiel:")}
     removing: (s) => `Suppression de « ${s} » ...`,
     removed: (label, dir) => `${label} : supprimé -> ${dim(dir)}`,
     removedBlock: "AGENTS.md : notre bloc balisé a été supprimé, ton autre contenu est conservé.",
+    geminiUninstall: (s) => `Gemini garde sa propre copie des extensions installées. Lance aussi : gemini extensions uninstall ${s}`,
     nothingFound: (s) => `Rien trouvé pour « ${s} », rien supprimé. (Essaie --global ou --project, ou indique le --tool.)`,
     removedOk: (s, n) => `« ${s} » supprimé (${n} emplacement(s)).`,
     e_rate_limited: "Trop de requêtes pour le moment, patiente un instant puis réessaie.",
@@ -190,7 +193,7 @@ ${bold("Beispiel:")}
     overwriteForceHint: "Exécution non interactive, les fichiers existants sont écrasés (mise à jour).",
     hashMismatch: (f) => `échec du contrôle d'intégrité pour ${f}, la somme de contrôle ne correspond pas.`,
     integrityOk: (n) => `Intégrité vérifiée (${n} fichier(s), SHA-256).`,
-    help: (tools, ep) => `${bold("skills-for-ai")}: installez vos Skills & Agents achetés en une commande
+    help: (tools, ep) => `${bold("skills-for-ai")}: installez vos Skills & Agents débloqués en une commande
 
 ${bold("Utilisation :")}
   npx @skills-for-ai/cli add <skill> --token <token> [options]
@@ -242,6 +245,7 @@ ${bold("Exemple :")}
     removing: (s) => `Eliminando «${s}» ...`,
     removed: (label, dir) => `${label}: eliminado -> ${dim(dir)}`,
     removedBlock: "AGENTS.md: se eliminó nuestro bloque marcado, tu otro contenido se mantiene.",
+    geminiUninstall: (s) => `Gemini guarda su propia copia de las extensiones instaladas. Ejecuta también: gemini extensions uninstall ${s}`,
     nothingFound: (s) => `No se encontró nada para «${s}», no se eliminó nada. (Prueba --global o --project, o indica el --tool.)`,
     removedOk: (s, n) => `«${s}» eliminado (${n} ubicación(es)).`,
     e_rate_limited: "Demasiadas solicitudes ahora mismo, espera un momento y vuelve a intentarlo.",
@@ -251,7 +255,7 @@ ${bold("Exemple :")}
     overwriteForceHint: "Ejecución no interactiva, los archivos existentes se sobrescriben (actualización).",
     hashMismatch: (f) => `falló la verificación de integridad de ${f}, la suma de comprobación no coincide.`,
     integrityOk: (n) => `Integridad verificada (${n} archivo(s), SHA-256).`,
-    help: (tools, ep) => `${bold("skills-for-ai")}: instala los Skills & Agents comprados con un comando
+    help: (tools, ep) => `${bold("skills-for-ai")}: instala tus Skills & Agents desbloqueados con un comando
 
 ${bold("Uso:")}
   npx @skills-for-ai/cli add <skill> --token <token> [opciones]
@@ -403,6 +407,69 @@ function runDoctor(o, L) {
 
 // Lokale Deinstallation: löscht den Skill-Ordner je Tool/Scope + entfernt unseren AGENTS.md-Block.
 // Kein Token/Server nötig: rein lokal, schreibt/löscht NUR in bekannten Skill-Pfaden (Safety-Check).
+// Agent products install sub-skills (<skill>-audit, ...) plus tool files (persona, command, rule, workflow).
+// Safety: a sub-skill folder is removed only if its SKILL.md carries our license id. Tool files with our
+// exact names are removed only in a base where one of our sub-skills was found, never a same-named foreign file.
+const OUR_MARK = "LicenseRef-skills-for-ai";
+const AGENT_SUB = {
+  "claude-code": [".claude/skills"], "gemini": [".agents/skills"], "cursor": [".cursor/skills", ".agents/skills"],
+  "github-copilot": [".agents/skills", ".github/skills"], "codex": [".agents/skills"],
+  "windsurf": [".codeium/windsurf/skills", ".windsurf/skills"], "cline": [".cline/skills"],
+};
+const AGENT_FILES = {
+  "claude-code": [".claude/agents/{id}.md", ".claude/commands/{id}.md"],
+  "github-copilot": [".copilot/agents/{id}.agent.md", ".github/agents/{id}.agent.md", ".github/agents/{id}.md"],
+  "cursor": [".cursor/rules/{id}.mdc", ".cursor/commands/{id}.md"],
+  "windsurf": [".codeium/windsurf/global_workflows/{id}.md", ".codeium/windsurf/workflows/{id}.md", ".windsurf/workflows/{id}.md"],
+  "cline": [".clinerules/{id}.md", ".clinerules/workflows/{id}.md"],
+};
+function isOurSkillDir(dir) {
+  try { return readFileSync(join(dir, "SKILL.md"), "utf8").includes(OUR_MARK); } catch { return false; }
+}
+function removeAgentParts(tk, label, wbase, skill, seen, ourDirs) {
+  const inBase = (p) => p !== wbase && p.startsWith(wbase + sep);
+  let n = 0, ours = false;
+  for (const sub of AGENT_SUB[tk] || []) {
+    const root = resolve(wbase, ...sub.split("/"));
+    if (!inBase(root) || !existsSync(root)) continue;
+    let names = [];
+    try { names = readdirSync(root); } catch { names = []; }
+    for (const name of names) {
+      if (!name.startsWith(skill + "-")) continue;
+      const d = resolve(root, name);
+      if (ourDirs.has(d)) { ours = true; continue; }
+      if (seen.has(d) || !isOurSkillDir(d)) continue;
+      seen.add(d); ourDirs.add(d); ours = true;
+      try { rmSync(d, { recursive: true, force: true }); ok(T.removed(label, d)); n++; } catch (e) { warn(`${label}: ${e.message}`); }
+    }
+  }
+  if (!ours) return n;
+  for (const rel of AGENT_FILES[tk] || []) {
+    const file = resolve(wbase, ...rel.replace("{id}", skill).split("/"));
+    if (!inBase(file) || seen.has(file) || !existsSync(file)) continue;
+    seen.add(file);
+    try { rmSync(file, { force: true }); ok(T.removed(label, file)); n++; } catch (e) { warn(`${label}: ${e.message}`); }
+  }
+  return n;
+}
+// Gemini agent = extension folder <skill>/ in the project (gemini-extension.json with our name + our skills).
+function removeGeminiExt(skill, seen) {
+  const dir = resolve(CWD, skill);
+  if (dir === CWD || !dir.startsWith(CWD + sep) || seen.has(dir)) return 0;
+  try {
+    const ext = JSON.parse(readFileSync(join(dir, "gemini-extension.json"), "utf8"));
+    if (!ext || ext.name !== skill) return 0;
+    const sk = join(dir, "skills");
+    const ours = existsSync(sk) && readdirSync(sk).some((n) => isOurSkillDir(join(sk, n)));
+    if (!ours) return 0;
+    seen.add(dir);
+    rmSync(dir, { recursive: true, force: true });
+    ok(T.removed(bold(`${TOOLS.gemini.label} (${T.where_project})`), dir));
+    info(T.geminiUninstall(skill));
+    return 1;
+  } catch { return 0; }
+}
+
 function runRemove(o, L, skill) {
   const requested = [...(o.tool || []), ...(o.agent || [])].flatMap((s) => s.split(",")).map((s) => s.trim()).filter(Boolean);
   let tools;
@@ -413,7 +480,7 @@ function runRemove(o, L, skill) {
   const scopes = o.global ? ["global"] : o.project ? ["project"] : ["global", "project"];
   info(T.removing(skill));
   let removed = 0;
-  const seen = new Set();
+  const seen = new Set(), ourDirs = new Set();
   for (const tk of tools) {
     const t = TOOLS[tk]; if (!t) continue;
     for (const where of scopes) {
@@ -421,15 +488,21 @@ function runRemove(o, L, skill) {
       if (!wbase) continue;
       const dir = resolve(wbase, ...(DOC_SUB[tk] || ".agents/skills").split("/"), skill);
       if (dir === wbase || !dir.startsWith(wbase + sep)) continue;  // Safety: niemals außerhalb der bekannten Basis löschen
-      if (seen.has(dir)) continue; seen.add(dir);
-      if (!existsSync(dir)) continue;
-      try {
-        rmSync(dir, { recursive: true, force: true });
-        ok(T.removed(bold(`${t.label} (${where === "global" ? T.where_global : T.where_project})`), dir));
-        removed++;
-      } catch (e) { warn(`${t.label}: ${e.message}`); }
+      const label = bold(`${t.label} (${where === "global" ? T.where_global : T.where_project})`);
+      if (!seen.has(dir)) {
+        seen.add(dir);
+        if (existsSync(dir)) {
+          try {
+            rmSync(dir, { recursive: true, force: true });
+            ok(T.removed(label, dir));
+            removed++;
+          } catch (e) { warn(`${t.label}: ${e.message}`); }
+        }
+      }
+      removed += removeAgentParts(tk, label, wbase, skill, seen, ourDirs);
     }
   }
+  if (tools.includes("gemini") && scopes.includes("project")) removed += removeGeminiExt(skill, seen);
   // AGENTS.md (Codex): NUR unseren markierten Block entfernen, restlichen Nutzer-Inhalt behalten.
   const ag = resolve(CWD, "AGENTS.md");
   if (existsSync(ag)) {
@@ -441,7 +514,9 @@ function runRemove(o, L, skill) {
         const out = cur
           .replace(new RegExp("\\s*" + escapeRe(START) + "[\\s\\S]*?" + escapeRe(END) + "\\s*", "g"), "\n")
           .replace(/\n{3,}/g, "\n\n").replace(/^\n+/, "");
-        writeFileSync(ag, out.trimEnd() + "\n", "utf8");
+        // Only our block was in it (we created the file): remove the now empty file instead of leaving it.
+        if (out.trim()) writeFileSync(ag, out.trimEnd() + "\n", "utf8");
+        else rmSync(ag, { force: true });
         info(T.removedBlock);
         removed++;
       }

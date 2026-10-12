@@ -42,7 +42,7 @@ const STR = {
     e_missing_skill: "No skill submitted.",
     e_file_not_available: "No file is (yet) available for this skill.",
     e_server: (st, e) => `Server error (${st}): ${e}`,
-    e_unknown_action: (a) => `Unknown action '${a}'. Supported: add, remove, doctor.`,
+    e_unknown_action: (a) => `Unknown action '${a}'. Supported: add, add-agent, remove, doctor.`,
     e_no_skill: "No skill given. Example: add website-doctor --token ...",
     e_no_token: "No --token given. You'll find your token under 'My Skills'.",
     e_both_scope: "Specify only one of --global / --project.",
@@ -63,6 +63,7 @@ const STR = {
     nothingFound: (s) => `Nothing found for '${s}', nothing removed. (Try --global or --project, or name the --tool.)`,
     removedOk: (s, n) => `'${s}' removed (${n} location(s)).`,
     e_rate_limited: "Too many requests right now, please wait a moment and try again.",
+    e_bad_endpoint: (u) => `Refusing endpoint '${u}': only https://<project>.supabase.co (or http://localhost for development) is allowed, so your token never goes to a foreign host.`,
     overwriteWarn: (n) => `${n} existing file(s) would be overwritten:`,
     overwriteAsk: "Overwrite them? [y/N] ",
     overwriteAbort: "Aborted, nothing was changed.",
@@ -73,6 +74,7 @@ const STR = {
 
 ${bold("Usage:")}
   npx @skills-for-ai/cli add <skill> --token <token> [options]
+  npx @skills-for-ai/cli add-agent <agent> --token <token> [--tool <key>]...
   npx @skills-for-ai/cli remove <skill> [--tool <key>]... [--global|--project]   (local, no token)
   npx @skills-for-ai/cli doctor
 
@@ -87,6 +89,7 @@ ${bold("Options:")}
   --endpoint <url>    Override the delivery endpoint (default: ${ep}).
   --yes               No questions asked (also confirms overwrites).
   --force             Overwrite existing files without asking.
+  --version           Print the CLI version.
   --help              This help.
 
 ${bold("Example:")}
@@ -104,7 +107,7 @@ ${bold("Example:")}
     e_missing_skill: "Kein Skill uebermittelt.",
     e_file_not_available: "Fuer diesen Skill ist (noch) keine Datei hinterlegt.",
     e_server: (st, e) => `Server-Fehler (${st}): ${e}`,
-    e_unknown_action: (a) => `Unbekannte Aktion '${a}'. Unterstuetzt: add, remove, doctor.`,
+    e_unknown_action: (a) => `Unbekannte Aktion '${a}'. Unterstuetzt: add, add-agent, remove, doctor.`,
     e_no_skill: "Kein Skill angegeben. Beispiel: add website-doctor --token ...",
     e_no_token: "Kein --token angegeben. Den Token findest du unter 'Meine Skills'.",
     e_both_scope: "Nur eines von --global / --project angeben.",
@@ -125,6 +128,7 @@ ${bold("Example:")}
     nothingFound: (s) => `Nichts gefunden fuer '${s}', nichts entfernt. (Versuche --global oder --project, oder nenne das --tool.)`,
     removedOk: (s, n) => `'${s}' entfernt (${n} Ort(e)).`,
     e_rate_limited: "Zu viele Anfragen gerade, bitte kurz warten und erneut versuchen.",
+    e_bad_endpoint: (u) => `Endpoint '${u}' abgelehnt: erlaubt ist nur https://<projekt>.supabase.co (oder http://localhost zum Entwickeln), damit dein Token nie an einen fremden Host geht.`,
     overwriteWarn: (n) => `${n} vorhandene Datei(en) wuerden ueberschrieben:`,
     overwriteAsk: "Ueberschreiben? [j/N] ",
     overwriteAbort: "Abgebrochen, nichts veraendert.",
@@ -135,6 +139,7 @@ ${bold("Example:")}
 
 ${bold("Nutzung:")}
   npx @skills-for-ai/cli add <skill> --token <token> [Optionen]
+  npx @skills-for-ai/cli add-agent <agent> --token <token> [--tool <key>]...
   npx @skills-for-ai/cli remove <skill> [--tool <key>]... [--global|--project]   (lokal, kein Token)
   npx @skills-for-ai/cli doctor
 
@@ -149,6 +154,7 @@ ${bold("Optionen:")}
   --endpoint <url>    Liefer-Endpoint ueberschreiben (Default: ${ep}).
   --yes               Ohne Rueckfragen (bestaetigt auch Ueberschreiben).
   --force             Bestehende Dateien ohne Rueckfrage ueberschreiben.
+  --version           CLI-Version ausgeben.
   --help              Diese Hilfe.
 
 ${bold("Beispiel:")}
@@ -166,7 +172,7 @@ ${bold("Beispiel:")}
     e_missing_skill: "Aucun skill transmis.",
     e_file_not_available: "Aucun fichier n'est (encore) disponible pour ce skill.",
     e_server: (st, e) => `Erreur serveur (${st}) : ${e}`,
-    e_unknown_action: (a) => `Action « ${a} » inconnue. Pris en charge : add, remove, doctor.`,
+    e_unknown_action: (a) => `Action « ${a} » inconnue. Pris en charge : add, add-agent, remove, doctor.`,
     e_no_skill: "Aucun skill indiqué. Exemple : add website-doctor --token ...",
     e_no_token: "Aucun --token indiqué. Vous trouverez votre jeton dans « Mes skills ».",
     e_both_scope: "Indiquez un seul de --global / --project.",
@@ -187,6 +193,7 @@ ${bold("Beispiel:")}
     nothingFound: (s) => `Rien trouvé pour « ${s} », rien supprimé. (Essaie --global ou --project, ou indique le --tool.)`,
     removedOk: (s, n) => `« ${s} » supprimé (${n} emplacement(s)).`,
     e_rate_limited: "Trop de requêtes pour le moment, patiente un instant puis réessaie.",
+    e_bad_endpoint: (u) => `Point de livraison « ${u} » refusé : seul https://<projet>.supabase.co (ou http://localhost pour le développement) est autorisé, pour que ton jeton n'aille jamais vers un hôte étranger.`,
     overwriteWarn: (n) => `${n} fichier(s) existant(s) seraient écrasés :`,
     overwriteAsk: "Les écraser ? [o/N] ",
     overwriteAbort: "Annulé, rien n'a été modifié.",
@@ -197,6 +204,7 @@ ${bold("Beispiel:")}
 
 ${bold("Utilisation :")}
   npx @skills-for-ai/cli add <skill> --token <token> [options]
+  npx @skills-for-ai/cli add-agent <agent> --token <token> [--tool <key>]...
   npx @skills-for-ai/cli remove <skill> [--tool <key>]... [--global|--project]   (local, sans jeton)
   npx @skills-for-ai/cli doctor
 
@@ -211,6 +219,7 @@ ${bold("Options :")}
   --endpoint <url>    Remplacer le point de livraison (par défaut : ${ep}).
   --yes               Sans confirmation (confirme aussi l'écrasement).
   --force             Écraser les fichiers existants sans confirmation.
+  --version           Afficher la version du CLI.
   --help              Cette aide.
 
 ${bold("Exemple :")}
@@ -228,7 +237,7 @@ ${bold("Exemple :")}
     e_missing_skill: "No se envió ningún skill.",
     e_file_not_available: "Aún no hay ningún archivo disponible para este skill.",
     e_server: (st, e) => `Error del servidor (${st}): ${e}`,
-    e_unknown_action: (a) => `Acción «${a}» desconocida. Compatibles: add, remove, doctor.`,
+    e_unknown_action: (a) => `Acción «${a}» desconocida. Compatibles: add, add-agent, remove, doctor.`,
     e_no_skill: "No se indicó ningún skill. Ejemplo: add website-doctor --token ...",
     e_no_token: "No se indicó --token. Encontrarás tu token en «Mis skills».",
     e_both_scope: "Indica solo uno de --global / --project.",
@@ -249,6 +258,7 @@ ${bold("Exemple :")}
     nothingFound: (s) => `No se encontró nada para «${s}», no se eliminó nada. (Prueba --global o --project, o indica el --tool.)`,
     removedOk: (s, n) => `«${s}» eliminado (${n} ubicación(es)).`,
     e_rate_limited: "Demasiadas solicitudes ahora mismo, espera un momento y vuelve a intentarlo.",
+    e_bad_endpoint: (u) => `Endpoint «${u}» rechazado: solo se permite https://<proyecto>.supabase.co (o http://localhost para desarrollo), para que tu token nunca vaya a un host ajeno.`,
     overwriteWarn: (n) => `${n} archivo(s) existente(s) se sobrescribirían:`,
     overwriteAsk: "¿Sobrescribir? [s/N] ",
     overwriteAbort: "Cancelado, no se cambió nada.",
@@ -259,6 +269,7 @@ ${bold("Exemple :")}
 
 ${bold("Uso:")}
   npx @skills-for-ai/cli add <skill> --token <token> [opciones]
+  npx @skills-for-ai/cli add-agent <agent> --token <token> [--tool <key>]...
   npx @skills-for-ai/cli remove <skill> [--tool <key>]... [--global|--project]   (local, sin token)
   npx @skills-for-ai/cli doctor
 
@@ -273,6 +284,7 @@ ${bold("Opciones:")}
   --endpoint <url>    Sobrescribir el endpoint de entrega (por defecto: ${ep}).
   --yes               Sin preguntas (también confirma sobrescrituras).
   --force             Sobrescribir archivos existentes sin preguntar.
+  --version           Mostrar la versión del CLI.
   --help              Esta ayuda.
 
 ${bold("Ejemplo:")}
@@ -337,11 +349,14 @@ function writeSafe(base, rel, content) {
 
 // Geteilte Guidance-Dateien (z. B. AGENTS.md von Codex) NIE überschreiben: der Käufer hat dort
 // evtl. eigene Team-Regeln. Stattdessen einen idempotenten, markierten Block ein-/aktualisieren.
+// Nur die AGENTS.md an der WURZEL (Codex-Persona) wird gemerged; eine gleichnamige Datei INNERHALB eines
+// Skill-Ordners (z. B. .agents/skills/<id>/AGENTS.md) ist normaler Skill-Inhalt und wird 1:1 geschrieben.
 const MERGE_FILES = new Set(["AGENTS.md"]);
 function baseName(rel) { return rel.split("/").pop(); }
+const isMergeTarget = (rel) => MERGE_FILES.has(rel);
 function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 function installFile(base, rel, content, skill) {
-  if (!MERGE_FILES.has(baseName(rel))) return { dest: writeSafe(base, rel, content), merged: false };
+  if (!isMergeTarget(rel)) return { dest: writeSafe(base, rel, content), merged: false };
   const dest = resolve(base, ...rel.split("/"));
   if (dest !== base && !dest.startsWith(base + sep)) throw new Error(T.e_unsafe_path(rel));
   const START = `<!-- skills-for-ai:${skill}:start -->`;
@@ -350,7 +365,8 @@ function installFile(base, rel, content, skill) {
   const existing = existsSync(dest) ? readFileSync(dest, "utf8") : "";
   let out, merged = false;
   if (existing.includes(START) && existing.includes(END)) {        // idempotent: nur unseren Block ersetzen
-    out = existing.replace(new RegExp(escapeRe(START) + "[\\s\\S]*?" + escapeRe(END)), block);
+    // Ersatz als Funktion: $&, $', $` oder $$ im ausgelieferten Inhalt bleiben wörtlich erhalten.
+    out = existing.replace(new RegExp(escapeRe(START) + "[\\s\\S]*?" + escapeRe(END)), () => block);
     merged = true;
   } else if (existing.trim()) {                                    // bestehende Nutzerdatei behalten, Block anhängen
     out = existing.replace(/\s*$/, "") + "\n\n" + block + "\n";
@@ -374,6 +390,8 @@ const DOC_SUB = {
   "claude-code": ".claude/skills", "gemini": ".agents/skills", "cursor": ".agents/skills",
   "github-copilot": ".agents/skills", "codex": ".agents/skills", "windsurf": ".codeium/windsurf/skills", "cline": ".cline/skills",
 };
+// Devin Desktop (Windsurf): Projekt-Installationen liegen unter .windsurf/skills, globale unter ~/.codeium/windsurf/skills.
+const docSub = (tk, where) => (tk === "windsurf" && where === "project") ? ".windsurf/skills" : (DOC_SUB[tk] || ".agents/skills");
 function runDoctor(o, L) {
   const reqd = [...(o.tool || []), ...(o.agent || [])].flatMap((s) => s.split(",")).map((s) => s.trim()).filter(Boolean).map(norm);
   let tools = reqd.length ? reqd.filter((t) => TOOLS[t]) : detectTools();
@@ -385,7 +403,7 @@ function runDoctor(o, L) {
     for (const where of ["global", "project"]) {
       const wbase = where === "global" ? (t.globalBase || null) : CWD;
       if (!wbase) continue;
-      const dir = resolve(wbase, ...(DOC_SUB[tk] || ".agents/skills").split("/"));
+      const dir = resolve(wbase, ...docSub(tk, where).split("/"));
       let label;
       try { label = existsSync(dir) ? readdirSync(dir).filter((n) => !n.startsWith(".")).length + " installed" : "none"; }
       catch (e) { label = "?"; }
@@ -486,7 +504,7 @@ function runRemove(o, L, skill) {
     for (const where of scopes) {
       const wbase = where === "global" ? (t.globalBase || null) : CWD;
       if (!wbase) continue;
-      const dir = resolve(wbase, ...(DOC_SUB[tk] || ".agents/skills").split("/"), skill);
+      const dir = resolve(wbase, ...docSub(tk, where).split("/"), skill);
       if (dir === wbase || !dir.startsWith(wbase + sep)) continue;  // Safety: niemals außerhalb der bekannten Basis löschen
       const label = bold(`${t.label} (${where === "global" ? T.where_global : T.where_project})`);
       if (!seen.has(dir)) {
@@ -527,6 +545,15 @@ function runRemove(o, L, skill) {
   else warn(T.nothingFound(skill));
 }
 
+// Der Token darf nur an ein Supabase-Projekt (https) gehen; http nur lokal zum Entwickeln.
+function allowedEndpoint(u) {
+  let x;
+  try { x = new URL(u); } catch { return false; }
+  if (x.username || x.password) return false;
+  if (x.protocol === "https:" && /^[a-z0-9-]+\.supabase\.co$/i.test(x.hostname)) return true;
+  return (x.protocol === "http:" || x.protocol === "https:") && ["localhost", "127.0.0.1", "[::1]"].includes(x.hostname);
+}
+
 // SHA-256 (hex) für den Integritätscheck der ausgelieferten Dateien.
 function sha256(s) { return createHash("sha256").update(String(s), "utf8").digest("hex"); }
 // Ja/Nein-Rückfrage (nur im interaktiven Terminal genutzt).
@@ -553,6 +580,7 @@ async function main() {
         yes: { type: "boolean" },
         force: { type: "boolean" },
         help: { type: "boolean" },
+        version: { type: "boolean", short: "v" },
       },
     });
   } catch (e) {
@@ -564,6 +592,10 @@ async function main() {
   const L = pickLang(o.lang || process.env.SFA_LANG || process.env.LC_ALL || process.env.LC_MESSAGES || process.env.LANG);
   T = STR[L];
 
+  if (o.version || pos[0] === "version") {
+    console.log(JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version);
+    return;
+  }
   if (o.help || pos[0] === "help" || pos.length === 0) {
     console.log(T.help(toolList(), DEFAULT_ENDPOINT));
     if (!(o.help || pos[0] === "help")) process.exitCode = 1;
@@ -603,6 +635,7 @@ async function main() {
 
   // Fetch files.
   const endpoint = (o.endpoint || DEFAULT_ENDPOINT).replace(/\/+$/, "");
+  if (!allowedEndpoint(endpoint)) die(T.e_bad_endpoint(endpoint));
   const url = `${endpoint}/functions/v1/${isAgent ? "deliver-agent" : "deliver"}`;
   info(T.fetching(skill));
   let res;
@@ -646,7 +679,7 @@ async function main() {
     let { base, where } = targetBase(toolKey, o.global, o.project);
     const fset = fileSet[toolKey];
     // Codex-Agent (Persona als AGENTS.md) gehört projekt-lokal, nicht global (würde sonst ~/AGENTS.md treffen).
-    const isAgentWrapper = Object.keys(fset).some((rel) => baseName(rel) === "AGENTS.md");
+    const isAgentWrapper = Object.keys(fset).some((rel) => isMergeTarget(rel));
     if (toolKey === "codex" && isAgentWrapper && !o.global) { base = CWD; where = T.where_project; }
     // Cursor and Cline read agent rules/workflows only inside a project (Cursor user rules are not files;
     // Cline: .clinerules/ and .clinerules/workflows/), so their agent wrappers always go project-local.
@@ -679,7 +712,7 @@ async function main() {
   if (!(o.yes || o.force)) {
     const clashes = [];
     for (const g of groups) for (const e of g.entries) {
-      if (MERGE_FILES.has(baseName(e.target))) continue;
+      if (isMergeTarget(e.target)) continue;
       const dest = resolve(g.base, ...e.target.split("/"));
       if (existsSync(dest)) clashes.push(dest);
     }
@@ -692,12 +725,17 @@ async function main() {
     }
   }
 
+  // Erst ALLES prüfen (sichere Zielpfade + SHA-256 gegen die Server-Prüfsumme), dann schreiben: ein einziger
+  // Fehler bricht ab, bevor irgendeine Datei angelegt wurde (keine halbe Installation).
   let verified = 0;
+  for (const g of groups) for (const e of g.entries) {
+    const dest = resolve(g.base, ...e.target.split("/"));
+    if (dest === g.base || !dest.startsWith(g.base + sep)) die(T.e_unsafe_path(e.target));
+    if (e.hash) { if (sha256(e.content) === e.hash) verified++; else die(T.hashMismatch(e.target)); }
+  }
   for (const g of groups) {
     let mergedAny = false;
     for (const e of g.entries) {
-      // Integritätscheck gegen die serverseitige SHA-256-Prüfsumme (falls geliefert).
-      if (e.hash) { if (sha256(e.content) === e.hash) verified++; else warn(T.hashMismatch(e.target)); }
       const r = installFile(g.base, e.target, e.content, skill); if (r.merged) mergedAny = true; total++;
     }
     ok(T.written(bold(g.labels.join(", ")), g.where, g.entries.length, g.base));
